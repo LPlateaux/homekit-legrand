@@ -34,7 +34,7 @@ module.exports = function (homebridge) {
 //	inherits(LegrandMyHome.PowerMeterService, Service);
 //
 //	process.setMaxListeners(0);
-	homebridge.registerPlatform("homebridge-jharell", "LoloGateway", LoloGateway);
+	homebridge.registerPlatform("homebridge-lolo", "LoloGateway", LoloGateway);
 
 };
 
