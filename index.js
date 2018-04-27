@@ -40,7 +40,7 @@ module.exports = function (homebridge) {
 
 
 
-class LegrandMyHomeGateway {
+class LoloGateway {
 	constructor(log, config, api) {
 		this.log = log;
 		this.config = config || {};
@@ -808,8 +808,8 @@ class MHPowerMeter {
 			.setCharacteristic(Characteristic.Model, "Power Meter")
 			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
-		this.powerMeterService = new LegrandMyHomeGateway.PowerMeterService(this.name);
-		this.powerMeterService.getCharacteristic(LegrandMyHomeGateway.CurrentPowerConsumption)
+		this.powerMeterService = new LoloGateway.PowerMeterService(this.name);
+		this.powerMeterService.getCharacteristic(LoloGateway.CurrentPowerConsumption)
 			.on('get', (callback) => {
 				this.log.info(sprintf("getConsumption %s = %s",this.address, this.state));
 				callback(null, this.value);
