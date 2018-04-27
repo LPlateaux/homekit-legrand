@@ -34,13 +34,13 @@ module.exports = function (homebridge) {
 //	inherits(LegrandMyHome.PowerMeterService, Service);
 //
 //	process.setMaxListeners(0);
-	homebridge.registerPlatform("homebridge-lolo", "LoloGateway", LoloGateway);
+	homebridge.registerPlatform("homebridge-lolo", "LegrandMyHome", LegrandMyHome);
 
 };
 
 
 
-class LoloGateway {
+class LegrandMyHome {
 	constructor(log, config, api) {
 		this.log = log;
 		this.config = config || {};
@@ -808,12 +808,12 @@ class MHPowerMeter {
 			.setCharacteristic(Characteristic.Model, "Power Meter")
 			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
-		this.powerMeterService = new LoloGateway.PowerMeterService(this.name);
-		this.powerMeterService.getCharacteristic(LoloGateway.CurrentPowerConsumption)
-			.on('get', (callback) => {
-				this.log.info(sprintf("getConsumption %s = %s",this.address, this.state));
-				callback(null, this.value);
-			});
+//		this.powerMeterService = new LegrandMyHome.PowerMeterService(this.name);
+//		this.powerMeterService.getCharacteristic(LegrandMyHome.CurrentPowerConsumption)
+//			.on('get', (callback) => {
+//				this.log.info(sprintf("getConsumption %s = %s",this.address, this.state));
+//				callback(null, this.value);
+//			});
 		return [service, this.powerMeterService];
 	}	
 }
