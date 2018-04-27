@@ -116,15 +116,15 @@ class LegrandMyHome {
 				switch (_value) {
 					case 0:
 						accessory.state = Characteristic.PositionState.STOPPED;
-						accessory.evaluatePosition();
+//						accessory.evaluatePosition();
 						break;
 					case 1:
 						accessory.state = Characteristic.PositionState.INCREASING;
-						accessory.evaluatePosition();
+//						accessory.evaluatePosition();
 						break;
 					case 2:
 						accessory.state = Characteristic.PositionState.DECREASING;
-						accessory.evaluatePosition();
+//						accessory.evaluatePosition();
 						break;
 				}
 				accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).getValue(null);
