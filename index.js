@@ -8,11 +8,11 @@ module.exports = function (homebridge) {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	Accessory = homebridge.platformAccessory;
-//	UUIDGen = homebridge.hap.uuid;
-//
-//
-//
-//	/* Try to map Elgato's outlet custom vars */
+	UUIDGen = homebridge.hap.uuid;
+
+
+
+//	/*Try to map Elgato's outlet custom vars */
 //	LegrandMyHome.CurrentPowerConsumption = function() {
 //		Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
 //		this.setProps({
@@ -483,7 +483,7 @@ class MHBlindAdvanced {
 		this.groups = config.groups || []; 		/* TODO */
 		this.pul = false; 						/* TODO */
 		this.displayName = config.name;
-		//this.time = config.time || 0;
+		this.time = config.time || 0;
 		this.UUID = UUIDGen.generate(sprintf("blindplus-%s",config.address));
 		this.log = log;
 		
