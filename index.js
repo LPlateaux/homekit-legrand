@@ -375,7 +375,7 @@ class MHBlind {
 					}
 /* Si entrouvert en haut */
 					if (this.targetPosition >= 5 && this.targetPosition <= 50) {
-						travelTimeMs = time*1000*(this.targetPosition)/100;
+						travelTimeMs = this.time*1000*(this.targetPosition)/100;
 						this.mh.simpleBlindCommand(this.address,2);
 						//essai
 						var compteurMs = 4000 ;
@@ -406,7 +406,7 @@ class MHBlind {
 					}
 /* Si entrouvert en bas */
 					if (this.targetPosition > 50 && this.targetPosition <= 95) {
-						travelTimeMs = time*1000*(100-this.targetPosition)/100;
+						travelTimeMs = this.time*1000*(100-this.targetPosition)/100;
 						this.mh.simpleBlindCommand(this.address,1);
 						//essai
 						var compteurMs = 4000 ;
