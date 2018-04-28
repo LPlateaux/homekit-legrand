@@ -351,45 +351,57 @@ class MHBlind {
 		this.windowCoveringService.getCharacteristic(Characteristic.HoldPosition)
 		.on('set', (value, callback) => {
 			this.mh.simpleBlindCommand(this.address,0);
+			this.log.debug(sprintf("Envoi de holdPosition pour le volet %s : commande %s",this.address, this.state));
 		});
 /*Fin de l'ajout du service optionnel "HoldPosition"*/
 		
 		this.windowCoveringService.getCharacteristic(Characteristic.TargetPosition)
 			.on('set', (value, callback) => {
 				this.targetPosition = value;
-/*variable pour calcul du temps de montée ou descente*/
+				this.log.debug(sprintf("Envoi de la commande %s pour le volet %s", this.state, this.name));
+				/*variable pour calcul du temps de montée ou descente*/
 				var travelTimeMs = 0;
 
 //Mon code pour être sûr de toujours partir d'où il faut vu qu'on ne connait pas la position du volet
 // targetPosition = 100 qd baissé et =0 qd levé 			
 				
 				if (this.time != 0) {
-/*Si complétement fermé*/
-					
+					this.log.debug(sprintf("Commande avec temps de parcours %s pour le volet %s", this.time, this.name));
+					/*Si complétement fermé*/
 					if (this.targetPosition > 95) {
 						this.mh.simpleBlindCommand(this.address,1);
+						this.log.debug(sprintf("Demande position fermée complète, envoi de la commande %s pour le volet %s", this.state, this.name));
 					}
 /*Si complétement ouvert*/
 					if (this.targetPosition < 5 ) {
 						this.mh.simpleBlindCommand(this.address,2);
+						this.log.debug(sprintf("Demande position ouverte complète, envoi de la commande %s pour le volet %s", this.state, this.name));
 					}
 /* Si entrouvert en haut */
 					if (this.targetPosition >= 5 && this.targetPosition <= 50) {
+						this.log.debug(sprintf("Demande position fermeture partielle à %s, envoi de la commande %s pour le volet %s", this.targetPosition, this.state, this.name));
 						travelTimeMs = this.time*1000*(this.targetPosition)/100;
+						this.log.debug(sprintf("***Calcul du temps de descente %s", travelTimeMS));
 						this.mh.simpleBlindCommand(this.address,2);
+						this.log.debug(sprintf("***Ordre de montée pour calage"));
 						//essai
 						var compteurMs = 4000 ;
 						var totalTime = 0 ;
 						setTimeout(function goDownAsap() {
+							this.log.debug(sprintf("***Attente fin de montée"));
 							if (this.state == 0 || totalTime>this.time) {
+								this.log.debug(sprintf("***Montée terminée : état %s et temps de montée au final %s ms", this.state, totalTime));
 								this.mh.simpleBlindCommand(this.address,1);
 								setTimeout(function() {
+									this.log.debug(sprintf("***Début descente pendant %s ms", travelTimeMs));
 									this.mh.simpleBlindCommand(this.address,0);
 								}.bind(this), travelTimeMs);
 							}
 							else {
+								this.log.debug(sprintf("***Montée non terminée : état %s et temps de montée totale %s ms", this.state, totalTime));
 								totalTime = totalTime + compteurMs;
 								compteurMs *= 0.8;
+								this.log.debug(sprintf("***nouvelle attente de %s ms", compteursMs));
 								setTimeout(goDownAsap, compteurMs);
 							}	
 						}, compteurMs);
@@ -406,21 +418,29 @@ class MHBlind {
 					}
 /* Si entrouvert en bas */
 					if (this.targetPosition > 50 && this.targetPosition <= 95) {
+						this.log.debug(sprintf("Demande position ouverture partielle à %s, envoi de la commande %s pour le volet %s", this.targetPosition, this.state, this.name));
 						travelTimeMs = this.time*1000*(100-this.targetPosition)/100;
+						this.log.debug(sprintf("***Calcul du temps de montée %s", travelTimeMS));
 						this.mh.simpleBlindCommand(this.address,1);
+						this.log.debug(sprintf("***Ordre de descente pour calage"));
 						//essai
 						var compteurMs = 4000 ;
 						var totalTime = 0 ;
 						setTimeout(function goUpAsap() {
+							this.log.debug(sprintf("***Attente fin de descente"));
 							if (this.state == 0 || totalTime>this.time) {
+								this.log.debug(sprintf("***Descente terminée : état %s et temps de descente au final %s ms", this.state, totalTime));
 								this.mh.simpleBlindCommand(this.address,1);
 								setTimeout(function() {
+									this.log.debug(sprintf("***Début montée pendant %s ms", travelTimeMs));
 									this.mh.simpleBlindCommand(this.address,0);
 								}.bind(this), travelTimeMs);
 							}
 							else {
+								this.log.debug(sprintf("***Descente non terminée : état %s et temps de descente totale %s ms", this.state, totalTime));
 								totalTime = totalTime + compteurMs;
 								compteurMs *= 0.8;
+								this.log.debug(sprintf("***nouvelle attente de %s ms", compteursMs));
 								setTimeout(goUpAsap, compteurMs);
 							}	
 						}, compteurMs);
@@ -434,14 +454,18 @@ class MHBlind {
 //						}.bind(this), this.time*1000);
 					}
 				} else {
+					this.log.debug(sprintf("Commande SANS temps de parcours pour le volet %s", this.time, this.name));
 						if (this.targetPosition > 95) {
 							this.mh.simpleBlindCommand(this.address,1);
+							this.log.debug(sprintf("***Commande à descendre pour le volet %s", this.name));
 						}
 						if (this.targetPosition < 5 ) {
 							this.mh.simpleBlindCommand(this.address,2);
+							this.log.debug(sprintf("***Commande à montée pour le volet %s", this.name));
 						}
 						if (this.targetPosition >=5 && this.targetPosition <=95) {
 							this.mh.simpleBlindCommand(this.address,0);
+							this.log.debug(sprintf("***Commande à arrêt pour le volet %s", this.name));
 						}
 						
 				}				
