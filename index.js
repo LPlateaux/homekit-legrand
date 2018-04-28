@@ -404,7 +404,7 @@ class MHBlind {
 								this.log.info(sprintf("***nouvelle attente de %s ms", compteursMs));
 								setTimeout(goDownAsap, compteurMs);
 							}	
-						}, compteurMs);
+						}.bind(this), compteurMs);
 						//fin essai
 //
 //						setTimeout(function() {
@@ -443,7 +443,7 @@ class MHBlind {
 								this.log.info(sprintf("***nouvelle attente de %s ms", compteursMs));
 								setTimeout(goUpAsap, compteurMs);
 							}	
-						}, compteurMs);
+						}.bind(this), compteurMs);
 						//fin essai
 //						setTimeout(function() {
 //							this.mh.simpleBlindCommand(this.address,0);
