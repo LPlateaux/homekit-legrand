@@ -381,7 +381,7 @@ class MHBlind {
 					if (this.targetPosition >= 5 && this.targetPosition <= 50) {
 						this.log.debug(sprintf("Demande position fermeture partielle à %s, envoi de la commande %s pour le volet %s", this.targetPosition, this.state, this.name));
 						travelTimeMs = this.time*1000*(this.targetPosition)/100;
-						this.log.debug(sprintf("***Calcul du temps de descente %s", travelTimeMS));
+						this.log.debug(sprintf("***Calcul du temps de descente %s", travelTimeMs));
 						this.mh.simpleBlindCommand(this.address,2);
 						this.log.debug(sprintf("***Ordre de montée pour calage"));
 						//essai
@@ -420,7 +420,7 @@ class MHBlind {
 					if (this.targetPosition > 50 && this.targetPosition <= 95) {
 						this.log.debug(sprintf("Demande position ouverture partielle à %s, envoi de la commande %s pour le volet %s", this.targetPosition, this.state, this.name));
 						travelTimeMs = this.time*1000*(100-this.targetPosition)/100;
-						this.log.debug(sprintf("***Calcul du temps de montée %s", travelTimeMS));
+						this.log.debug(sprintf("***Calcul du temps de montée %s", travelTimeMs));
 						this.mh.simpleBlindCommand(this.address,1);
 						this.log.debug(sprintf("***Ordre de descente pour calage"));
 						//essai
