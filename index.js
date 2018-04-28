@@ -14,25 +14,25 @@ module.exports = function (homebridge) {
 
 //	/*Try to map Elgato's outlet custom vars */
 //	LegrandMyHome.CurrentPowerConsumption = function() {
-//		Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
-//		this.setProps({
-//			format: Characteristic.Formats.UINT16,
-//			unit: "Watts",
-//			maxValue: 100000,
-//			minValue: 0,
-//			minStep: 1,
-//			perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
-//		});
-//		this.value = this.getDefaultValue();
-//		};
-//		LegrandMyHome.CurrentPowerConsumption.UUID = 'E863F10D-079E-48FF-8F27-9C2605A29F52';
+//	Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
+//	this.setProps({
+//	format: Characteristic.Formats.UINT16,
+//	unit: "Watts",
+//	maxValue: 100000,
+//	minValue: 0,
+//	minStep: 1,
+//	perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+//	});
+//	this.value = this.getDefaultValue();
+//	};
+//	LegrandMyHome.CurrentPowerConsumption.UUID = 'E863F10D-079E-48FF-8F27-9C2605A29F52';
 //	inherits(LegrandMyHome.CurrentPowerConsumption, Characteristic);
 //	LegrandMyHome.PowerMeterService = function(displayName, subtype) {
-//			Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
-//			this.addCharacteristic(LegrandMyHome.CurrentPowerConsumption);
+//	Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
+//	this.addCharacteristic(LegrandMyHome.CurrentPowerConsumption);
 //	};
 //	inherits(LegrandMyHome.PowerMeterService, Service);
-//
+
 //	process.setMaxListeners(0);
 	homebridge.registerPlatform("homebridge-lolo", "LegrandMyHome", LegrandMyHome);
 
@@ -114,18 +114,18 @@ class LegrandMyHome {
 		this.devices.forEach(function(accessory) {
 			if (accessory.address == _address && accessory.windowCoveringService !== undefined) {
 				switch (_value) {
-					case 0:
-						accessory.state = Characteristic.PositionState.STOPPED;
-//						accessory.evaluatePosition();
-						break;
-					case 1:
-						accessory.state = Characteristic.PositionState.INCREASING;
-//						accessory.evaluatePosition();
-						break;
-					case 2:
-						accessory.state = Characteristic.PositionState.DECREASING;
-//						accessory.evaluatePosition();
-						break;
+				case 0:
+					accessory.state = Characteristic.PositionState.STOPPED;
+//					accessory.evaluatePosition();
+					break;
+				case 1:
+					accessory.state = Characteristic.PositionState.INCREASING;
+//					accessory.evaluatePosition();
+					break;
+				case 2:
+					accessory.state = Characteristic.PositionState.DECREASING;
+//					accessory.evaluatePosition();
+					break;
 				}
 				accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).getValue(null);
 				accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
@@ -235,41 +235,41 @@ class MHRelay {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Relay")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Relay")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		switch (this.config.accessory) {
-			case 'MHRelayOutlet':
-				this.lightBulbService = new Service.Outlet(this.name);
-				break;
-			default:
-				this.lightBulbService = new Service.Lightbulb(this.name);
-				break;
+		case 'MHRelayOutlet':
+			this.lightBulbService = new Service.Outlet(this.name);
+			break;
+		default:
+			this.lightBulbService = new Service.Lightbulb(this.name);
+		break;
 		}
 
 		this.lightBulbService.getCharacteristic(Characteristic.On)
-			.on('set', (level, callback) => {
-				this.log.debug(sprintf("setPower %s = %s",this.address, level));
-				this.power = (level > 0);
-				if (this.power && this.bri == 0) {
-					this.bri = 100;
-				}
+		.on('set', (level, callback) => {
+			this.log.debug(sprintf("setPower %s = %s",this.address, level));
+			this.power = (level > 0);
+			if (this.power && this.bri == 0) {
+				this.bri = 100;
+			}
 
-				/* Custom frame support */
-				if (this.power && this.config.frame_on != null) {
-					this.mh.send(this.config.frame_on);
-				} else if (!this.power && this.config.frame_off != null) {
-					this.mh.send(this.config.frame_off);
-				} else {
-					this.mh.relayCommand(this.address,this.power)
-				}
-				callback(null);
-			})
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getPower %s = %s",this.address, this.power));
-				callback(null, this.power);
-			});
+			/* Custom frame support */
+			if (this.power && this.config.frame_on != null) {
+				this.mh.send(this.config.frame_on);
+			} else if (!this.power && this.config.frame_off != null) {
+				this.mh.send(this.config.frame_off);
+			} else {
+				this.mh.relayCommand(this.address,this.power)
+			}
+			callback(null);
+		})
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getPower %s = %s",this.address, this.power));
+			callback(null, this.power);
+		});
 		return [service, this.lightBulbService];
 	}
 }
@@ -286,7 +286,7 @@ class MHBlind {
 		this.time = config.time || 0;
 		this.UUID = UUIDGen.generate(sprintf("blind-%s",config.address));
 		this.log = log;
-		
+
 		this.runningStartTime = -1;
 		this.runningDirection = Characteristic.PositionState.STOPPED;
 		this.state = Characteristic.PositionState.STOPPED;
@@ -294,205 +294,231 @@ class MHBlind {
 		this.targetPosition = 0;
 		this.startDelayMs = config.startDelayMs || 0; /* Start delay of the automation and MH relay */
 		this.timeAdjust = config.timeAdjust || 5; /* Percent error, F411 is a bit buggy */
+		this.commandBuffers = {};
+		this.compteurUpMs = 4000 ;
+		this.totalTimeUp = 0 ;
+		this.compteurDownMs = 4000 ;
+		this.totalTimeDown = 0 ;
+		this.travelTimeMs = 0;
+
 		this.log.info(sprintf("LegrandMyHome::MHBlind create object: %s", this.address));
 	}
 
 //	evaluatePosition() {
-//		if (this.runningDirection == Characteristic.PositionState.STOPPED && this.currentPosition != Characteristic.PositionState.STOPPED) {
-//			this.runningStartTime = new Date();
-//			this.runningDirection = this.state;
-//			this.log.debug(sprintf("Starting position is %d", this.currentPosition))
-//		} else {
-//			if (this.runningDirection != Characteristic.PositionState.STOPPED && this.state == Characteristic.PositionState.STOPPED) {
-//				if (this.runningDirection == Characteristic.PositionState.INCREASING) {
-//					this.currentPosition = Math.min(100,this.currentPosition + (100 / (this.time*1000) * (((new Date())-this.runningStartTime+this.startDelayMs)*(1+this.timeAdjust/100))))
-//				} else {
-//					this.currentPosition = Math.max(0,this.currentPosition - (100 / (this.time*1000) * (((new Date())-this.runningStartTime+this.startDelayMs)*(1+this.timeAdjust/100))))
-//				}
-//				this.runningDirection = this.state;
-//				this.targetPosition = this.currentPosition;
-//				this.runningStartTime = -1;
-//
-//				this.log.debug(sprintf("Ending position is %d", this.currentPosition))
-//			} else {
-//				/* Uhm... */
-//			}
-//		}
+//	if (this.runningDirection == Characteristic.PositionState.STOPPED && this.currentPosition != Characteristic.PositionState.STOPPED) {
+//	this.runningStartTime = new Date();
+//	this.runningDirection = this.state;
+//	this.log.debug(sprintf("Starting position is %d", this.currentPosition))
+//	} else {
+//	if (this.runningDirection != Characteristic.PositionState.STOPPED && this.state == Characteristic.PositionState.STOPPED) {
+//	if (this.runningDirection == Characteristic.PositionState.INCREASING) {
+//	this.currentPosition = Math.min(100,this.currentPosition + (100 / (this.time*1000) * (((new Date())-this.runningStartTime+this.startDelayMs)*(1+this.timeAdjust/100))))
+//	} else {
+//	this.currentPosition = Math.max(0,this.currentPosition - (100 / (this.time*1000) * (((new Date())-this.runningStartTime+this.startDelayMs)*(1+this.timeAdjust/100))))
 //	}
-//	
+//	this.runningDirection = this.state;
+//	this.targetPosition = this.currentPosition;
+//	this.runningStartTime = -1;
+
+//	this.log.debug(sprintf("Ending position is %d", this.currentPosition))
+//	} else {
+//	/* Uhm... */
+//	}
+//	}
+//	}
+
 //	/* Calc the needed time to go from Max to Min */
 //	evaluateTravelTimeMs(from,to) {
-//		if (this.time == 0) return -1;
-//		return ((this.time*1000) / 100 * Math.abs(from-to));
+//	if (this.time == 0) return -1;
+//	return ((this.time*1000) / 100 * Math.abs(from-to));
 //	}
 
 	getServices() {
 		var service = new Service.AccessoryInformation();
+
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Blind")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Blind")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.windowCoveringService = new Service.WindowCovering(this.name);
 
 		this.windowCoveringService.getCharacteristic(Characteristic.PositionState)
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getPositionState %s = %s",this.address, this.state));
-				callback(null, this.state);
-			});
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getPositionState %s = %s",this.address, this.state));
+			callback(null, this.state);
+		});
 
 		this.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition)
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getCurrentPosition %s = %s",this.address, this.state));
-				callback(null, this.currentPosition);
-			});			
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getCurrentPosition %s = %s",this.address, this.state));
+			callback(null, this.currentPosition);
+		});			
 
-/*Ajout du service optionnel "HoldPosition"*/
+		/*Ajout du service optionnel "HoldPosition"*/
 		this.windowCoveringService.getCharacteristic(Characteristic.HoldPosition)
 		.on('set', (value, callback) => {
 			this.mh.simpleBlindCommand(this.address,0);
 			this.log.info(sprintf("Envoi de holdPosition pour le volet %s : commande %s",this.address, this.state));
 		});
-/*Fin de l'ajout du service optionnel "HoldPosition"*/
-		
+		/*Fin de l'ajout du service optionnel "HoldPosition"*/
+
 		this.windowCoveringService.getCharacteristic(Characteristic.TargetPosition)
-			.on('set', (value, callback) => {
-				this.targetPosition = value;
+		.on('set', (value, callback) => {
+			this.targetPosition = value;
+//			buffer de commandes pour éviter que l'application envoie des commandes multiples
+//			if (this.buffers[sprintf("%s-%s",_class,_address)] != null) {
+//			clearTimeout(this.buffers[sprintf("%s-%s",_class,_address)]);
+//			}
+//			this.buffers[sprintf("%s-%s",_class,_address)] = setTimeout(function() {
+//			this.command.send(_command);
+//			delete(this.buffers[sprintf("%s-%s",_class,_address)]);
+//			}.bind(this), _timeout);
+			if (this.commandBuffers[sprintf("%s",this.address)] != null) {
+				clearTimeout(this.commandBuffers[sprintf("%s",this.address)]);
+				this.log.info(sprintf("J'ai reçu une commande à %s pour le volet %s", this.targetPosition, this.name));
+			}
+			this.commandBuffers[sprintf("%s",this.address)] = setTimeout(function() {
+
 				this.log.info(sprintf("Envoi de la commande %s pour le volet %s", this.state, this.name));
 				/*variable pour calcul du temps de montée ou descente*/
-				var travelTimeMs = 0;
 
-//Mon code pour être sûr de toujours partir d'où il faut vu qu'on ne connait pas la position du volet
-// targetPosition = 100 qd baissé et =0 qd levé 			
-				
+//				Mon code pour être sûr de toujours partir d'où il faut vu qu'on ne connait pas la position du volet
+//				targetPosition = 100 qd baissé et =0 qd levé 			
+
 				if (this.time != 0) {
 					this.log.info(sprintf("Commande avec temps de parcours %s pour le volet %s", this.time, this.name));
-					/*Si complétement fermé*/
+					/*Si complétement ouvert*/
 					if (this.targetPosition > 95) {
 						this.mh.simpleBlindCommand(this.address,1);
-						this.log.info(sprintf("Demande position fermée complète, envoi de la commande %s pour le volet %s", this.state, this.name));
-					}
-/*Si complétement ouvert*/
-					if (this.targetPosition < 5 ) {
-						this.mh.simpleBlindCommand(this.address,2);
 						this.log.info(sprintf("Demande position ouverte complète, envoi de la commande %s pour le volet %s", this.state, this.name));
 					}
-/* Si entrouvert en haut */
-					if (this.targetPosition >= 5 && this.targetPosition <= 50) {
-						this.log.info(sprintf("Demande position fermeture partielle à %s, envoi de la commande %s pour le volet %s", this.targetPosition, this.state, this.name));
-						travelTimeMs = this.time*1000*(this.targetPosition)/100;
-						this.log.info(sprintf("***Calcul du temps de descente %s", travelTimeMs));
+					/*Si complétement fermé*/
+					if (this.targetPosition < 5 ) {
 						this.mh.simpleBlindCommand(this.address,2);
-						this.log.info(sprintf("***Ordre de montée pour calage"));
-						//essai
-						var compteurDownMs = 4000 ;
-						var totalTimeDown = 0 ;
-						setTimeout(function goDownAsap() {
-							this.log.info(sprintf("***Attente fin de montée"));
-							if (this.state == 0 || totalTimeDown > this.time) {
-								this.log.info(sprintf("***Montée terminée : état %s et temps de montée au final %s ms", this.state, totalTimeDown));
+						this.log.info(sprintf("Demande position fermée complète, envoi de la commande %s pour le volet %s", this.state, this.name));
+					}
+					/* Si entrouvert en bas */
+					if (this.targetPosition >= 5 && this.targetPosition <= 50) {
+						this.log.info(sprintf("Demande position fermeture partielle à %s, pour le volet %s", this.targetPosition, this.name));
+						this.travelTimeMs = this.time*1000*(this.targetPosition)/100;
+						this.log.info(sprintf("***Calcul du temps de remontée : %s ms", this.travelTimeMs));
+						this.mh.simpleBlindCommand(this.address,2);
+						this.log.info(sprintf("***Ordre de descente pour calage"));
+						this.compteurDownMs = 4000 ;
+						this.totalTimeDown = 0 ;
+						setTimeout(function goUpAsap() {
+							this.log.info(sprintf("***Attente fin de descente"));
+							if (this.state == 0 || this.totalTimeDown > this.time) {
+								this.log.info(sprintf("***Descente terminée : état %s et temps de descente au final %s ms", this.state, this.totalTimeDown));
 								this.mh.simpleBlindCommand(this.address,1);
+								this.log.info(sprintf("***Début remontée pendant %s ms", this.travelTimeMs));
 								setTimeout(function() {
-									this.log.info(sprintf("***Début descente pendant %s ms", travelTimeMs));
+									this.log.info(sprintf("***Début remontée pendant %s ms", this.travelTimeMs));
 									this.mh.simpleBlindCommand(this.address,0);
-								}.bind(this), travelTimeMs);
+									this.log.info(sprintf("***Fin remontée"));									
+								}.bind(this), this.travelTimeMs);
 							}
 							else {
-								this.log.info(sprintf("***Montée non terminée : état %s et temps de montée totale %s ms", this.state, totalTimeDown));
-								totalTimeDown = totalTimeDown + compteurDownMs;
-								compteurDownMs *= 0.8;
-								this.log.info(sprintf("***nouvelle attente de %s ms", compteurDownMs));
-								setTimeout(goDownAsap.bind(this), compteurDownMs);
+								this.log.info(sprintf("***Descente non terminée : état %s (doit être 2) et temps de descente total %s ms (< %s ms)", this.state, this.totalTimeDown, this.time));
+								this.totalTimeDown = this.totalTimeDown + this.compteurDownMs;
+								this.compteurDownMs *= 0.8;
+								this.log.info(sprintf("***Nouvelle attente de %s ms", this.compteurDownMs));
+								setTimeout(goUpAsap.bind(this), this.compteurDownMs);
 							}	
-						}.bind(this), compteurDownMs);
+						}.bind(this), this.compteurDownMs);
 						//fin essai
-//
+
 //						setTimeout(function() {
-//							this.mh.simpleBlindCommand(this.address,0);
-//							this.mh.simpleBlindCommand(this.address,1);
-//							setTimeout(function() {
-//								this.mh.simpleBlindCommand(this.address,0);
-//							}.bind(this), travelTimeMs);
+//						this.mh.simpleBlindCommand(this.address,0);
+//						this.mh.simpleBlindCommand(this.address,1);
+//						setTimeout(function() {
+//						this.mh.simpleBlindCommand(this.address,0);
+//						}.bind(this), this.travelTimeMs);
 //						}.bind(this), this.time*1000);
 
 					}
-/* Si entrouvert en bas */
+					/* Si entrouvert en haut */
 					if (this.targetPosition > 50 && this.targetPosition <= 95) {
-						this.log.info(sprintf("Demande position ouverture partielle à %s, envoi de la commande %s pour le volet %s", this.targetPosition, this.state, this.name));
-						travelTimeMs = this.time*1000*(100-this.targetPosition)/100;
-						this.log.info(sprintf("***Calcul du temps de montée %s", travelTimeMs));
+						this.log.info(sprintf("Demande position fermeture partielle à %s pour le volet %s", this.targetPosition, this.name));
+						this.travelTimeMs = this.time*1000*(100-this.targetPosition)/100;
+						this.log.info(sprintf("***Calcul du temps de redescente : %s ms", this.travelTimeMs));
 						this.mh.simpleBlindCommand(this.address,1);
-						this.log.info(sprintf("***Ordre de descente pour calage"));
+						this.log.info(sprintf("***Ordre de montée pour calage"));
 						//essai
-						var compteurUpMs = 4000 ;
-						var totalTimeUp = 0 ;
-						setTimeout(function goUpAsap() {
-							this.log.info(sprintf("***Attente fin de descente"));
-							if (this.state == 0 || totalTimeUp > this.time) {
-								this.log.info(sprintf("***Descente terminée : état %s et temps de descente au final %s ms", this.state, totalTimeUp));
+						this.compteurUpMs = 4000 ;
+						this.totalTimeUp = 0 ;
+						setTimeout(function goDownAsap() {
+							this.log.info(sprintf("***Attente fin de montée"));
+							if (this.state == 0 || this.totalTimeUp > this.time) {
+								this.log.info(sprintf("***Montée terminée : état %s et temps de montée au final %s ms", this.state, this.totalTimeUp));
 								this.mh.simpleBlindCommand(this.address,1);
+								this.log.info(sprintf("***Début redescente pendant %s ms", this.travelTimeMs));
 								setTimeout(function() {
-									this.log.info(sprintf("***Début montée pendant %s ms", travelTimeMs));
 									this.mh.simpleBlindCommand(this.address,0);
-								}.bind(this), travelTimeMs);
+									this.log.info(sprintf("***Fin de redescente"));
+								}.bind(this), this.travelTimeMs);
 							}
 							else {
-								this.log.info(sprintf("***Descente non terminée : état %s et temps de descente totale %s ms", this.state, totalTimeUp));
-								totalTimeUp = totalTimeUp + compteurUpMs;
-								compteurUpMs *= 0.8;
-								this.log.info(sprintf("***nouvelle attente de %s ms", compteurUpMs));
-								setTimeout(goUpAsap.bind(this), compteurUpMs);
+								this.log.info(sprintf("***Montée non terminée : état %s (devrait être 1) et temps de descente totale %s ms (< %s ms)", this.state, this.totalTimeUp), this.time);
+								this.totalTimeUp = this.totalTimeUp + this.compteurUpMs;
+								this.compteurUpMs *= 0.8;
+								this.log.info(sprintf("***nouvelle attente de %s ms", this.compteurUpMs));
+								setTimeout(goDownAsap.bind(this), this.compteurUpMs);
 							}	
-						}.bind(this), compteurUpMs);
+						}.bind(this), this.compteurUpMs);
 						//fin essai
 //						setTimeout(function() {
-//							this.mh.simpleBlindCommand(this.address,0);
-//							this.mh.simpleBlindCommand(this.address,2);
-//							setTimeout(function() {
-//								this.mh.simpleBlindCommand(this.address,0);
-//							}.bind(this), travelTimeMs);
+//						this.mh.simpleBlindCommand(this.address,0);
+//						this.mh.simpleBlindCommand(this.address,2);
+//						setTimeout(function() {
+//						this.mh.simpleBlindCommand(this.address,0);
+//						}.bind(this), this.travelTimeMs);
 //						}.bind(this), this.time*1000);
 					}
 				} else {
 					this.log.info(sprintf("Commande SANS temps de parcours pour le volet %s", this.time, this.name));
-						if (this.targetPosition > 95) {
-							this.mh.simpleBlindCommand(this.address,1);
-							this.log.info(sprintf("***Commande à descendre pour le volet %s", this.name));
-						}
-						if (this.targetPosition < 5 ) {
-							this.mh.simpleBlindCommand(this.address,2);
-							this.log.info(sprintf("***Commande à montée pour le volet %s", this.name));
-						}
-						if (this.targetPosition >=5 && this.targetPosition <=95) {
-							this.mh.simpleBlindCommand(this.address,0);
-							this.log.info(sprintf("***Commande à arrêt pour le volet %s", this.name));
-						}
-						
+					if (this.targetPosition > 95) {
+						this.mh.simpleBlindCommand(this.address,1);
+						this.log.info(sprintf("***Commande à monter pour le volet %s", this.name));
+					}
+					if (this.targetPosition < 5 ) {
+						this.mh.simpleBlindCommand(this.address,2);
+						this.log.info(sprintf("***Commande à descendre pour le volet %s", this.name));
+					}
+					if (this.targetPosition >=5 && this.targetPosition <=95) {
+						this.mh.simpleBlindCommand(this.address,0);
+						this.log.info(sprintf("***Commande à arrêt pour le volet %s", this.name));
+					}
+
 				}				
-/*Fin de mon code*/
-				
-/*Code original*/				
+				/*Fin de mon code*/
+
+				/*Code original*/				
 //				if (value > this.currentPosition) {
-//					this.mh.simpleBlindCommand(this.address,1);
+//				this.mh.simpleBlindCommand(this.address,1);
 //				} else {
-//					this.mh.simpleBlindCommand(this.address,2);
+//				this.mh.simpleBlindCommand(this.address,2);
 //				}
-//
+
 //				/* Use the calculated travel time only if the target isn't the complete Up or Complete Down */
 //				if (this.targetPosition > 0 && this.targetPosition < 100) {
-//					if (travelTimeMs > 0) {
-//						setTimeout(function() {
-//							this.mh.simpleBlindCommand(this.address,0);
-//						}.bind(this), travelTimeMs);
-//					}
+//				if (this.travelTimeMs > 0) {
+//				setTimeout(function() {
+//				this.mh.simpleBlindCommand(this.address,0);
+//				}.bind(this), this.travelTimeMs);
+//				}
 //				}
 				/*Fin du code Original*/
-			callback(null);
-			})
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getTargetPosition %s = %s",this.address, this.state));
-				callback(null, this.targetPosition);
-			});
+				callback(null);
+				delete(this.commandBuffers[sprintf("%s",this.address)]);
+			}.bind(this), 1000);
+		})
+
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getTargetPosition %s = %s",this.address, this.state));
+			callback(null, this.targetPosition);
+		});
 
 		return [service, this.windowCoveringService];
 	}
@@ -510,7 +536,7 @@ class MHBlindAdvanced {
 		this.time = config.time || 0;
 		this.UUID = UUIDGen.generate(sprintf("blindplus-%s",config.address));
 		this.log = log;
-		
+
 		this.state = Characteristic.PositionState.STOPPED;
 		this.currentPosition = 0;
 		this.targetPosition = 0;
@@ -520,49 +546,49 @@ class MHBlindAdvanced {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Advanced Blind")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Advanced Blind")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.windowCoveringPlusService = new Service.WindowCovering(this.name);
 
 		this.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState)
-			.on('get', (callback) => {
-				this.log.info(sprintf("getPositionState %s = %s",this.address, this.state));
-				callback(null, this.state);
-			});
+		.on('get', (callback) => {
+			this.log.info(sprintf("getPositionState %s = %s",this.address, this.state));
+			callback(null, this.state);
+		});
 
 		this.windowCoveringPlusService.getCharacteristic(Characteristic.CurrentPosition)
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getCurrentPosition %s = %s",this.address, this.state));
-				callback(null, this.currentPosition);
-			});
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getCurrentPosition %s = %s",this.address, this.state));
+			callback(null, this.currentPosition);
+		});
 
 		this.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition)
-			.on('set', (value, callback) => {
-				this.targetPosition = value;
-				if (this.targetPosition == this.currentPosition) {
-					this.state = Characteristic.PositionState.STOPPED;
-				} else if (this.targetPosition > this.currentPosition) {
-					this.state = Characteristic.PositionState.INCREASING;
-				} else {
-					this.state = Characteristic.PositionState.DECREASING;
-				}
-				this.mh.advancedBlindCommand(this.address,this.targetPosition);
-				this.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).getValue(null);
-				callback(null);
-			})
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getTargetPosition %s = %s",this.address, this.targetPosition));
-				callback(null, this.targetPosition);
-			});
+		.on('set', (value, callback) => {
+			this.targetPosition = value;
+			if (this.targetPosition == this.currentPosition) {
+				this.state = Characteristic.PositionState.STOPPED;
+			} else if (this.targetPosition > this.currentPosition) {
+				this.state = Characteristic.PositionState.INCREASING;
+			} else {
+				this.state = Characteristic.PositionState.DECREASING;
+			}
+			this.mh.advancedBlindCommand(this.address,this.targetPosition);
+			this.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).getValue(null);
+			callback(null);
+		})
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getTargetPosition %s = %s",this.address, this.targetPosition));
+			callback(null, this.targetPosition);
+		});
 
 		return [service, this.windowCoveringPlusService];
 	}
 }
 
 
-// new object for scenario (or IR blaster) activation (credits to dendeps)
+//new object for scenario (or IR blaster) activation (credits to dendeps)
 class MHScene {
 	constructor(log, config) {
 		this.config = config || {};
@@ -573,7 +599,7 @@ class MHScene {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("scene-%s",config.address));
 		this.log = log;
-		
+
 		this.value = 0;
 		this.log.info(sprintf("LegrandMyHome::MHScene create object: %s", this.address));
 	}
@@ -582,29 +608,29 @@ class MHScene {
 		var services = [];
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Scene")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address + " scene " + this.scene);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Scene")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address + " scene " + this.scene);
 
-			
+
 		this.statelessSwitch = new Service.Switch(this.name);
 		this.statelessSwitch.getCharacteristic(Characteristic.On)
-			.on('set', (value,callback) => {
-				if (value == true) {
-					this.log.info(sprintf("sceneOn %s = scenario %s",this.address, this.scene));
-					this.mh.sceneCommand(this.address,this.scene)
+		.on('set', (value,callback) => {
+			if (value == true) {
+				this.log.info(sprintf("sceneOn %s = scenario %s",this.address, this.scene));
+				this.mh.sceneCommand(this.address,this.scene)
 
-					/* Back to Off */
-					var Timer = setTimeout(function() {
-						this.statelessSwitch.getCharacteristic(Characteristic.On).setValue(false, undefined)
-					}.bind(this), 500);
-				}
-				callback(null);
-			})
-			.on('get', (callback) => {
-				this.log.info(sprintf("getStatus %s",this.address));
-				callback(null,false);
-			});
+				/* Back to Off */
+				var Timer = setTimeout(function() {
+					this.statelessSwitch.getCharacteristic(Characteristic.On).setValue(false, undefined)
+				}.bind(this), 500);
+			}
+			callback(null);
+		})
+		.on('get', (callback) => {
+			this.log.info(sprintf("getStatus %s",this.address));
+			callback(null,false);
+		});
 		return [service, this.statelessSwitch];				
 
 	}	
@@ -621,7 +647,7 @@ class MHDimmer {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("dimmer-%s",config.address));
 		this.log = log;
-		
+
 		this.power = false;
 		this.bri = 100;
 		this.sat = 0;
@@ -632,39 +658,39 @@ class MHDimmer {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Dimmer")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Dimmer")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.lightBulbService = new Service.Lightbulb(this.name);
 
 		this.lightBulbService.getCharacteristic(Characteristic.On)
-			.on('set', (level, callback) => {
-				this.log.debug(sprintf("setPower %s = %s",this.address, level));
-				this.power = (level > 0);
-				if (this.power && this.bri == 0) {
-					this.bri = 100;
-				}
-				this.mh.relayCommand(this.address,this.power)
-				callback(null);
-			})
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getPower %s = %s",this.address, this.power));
-				callback(null, this.power);
-			});
+		.on('set', (level, callback) => {
+			this.log.debug(sprintf("setPower %s = %s",this.address, level));
+			this.power = (level > 0);
+			if (this.power && this.bri == 0) {
+				this.bri = 100;
+			}
+			this.mh.relayCommand(this.address,this.power)
+			callback(null);
+		})
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getPower %s = %s",this.address, this.power));
+			callback(null, this.power);
+		});
 
 		this.lightBulbService.getCharacteristic(Characteristic.Brightness)
-			.on('set', (level, callback) => {
-				this.log.debug(sprintf("setBrightness %s = %d",this.address, level));
-				this.bri = parseInt(level);
-				this.power = (this.bri > 0);
-				this.mh.dimmerCommand(this.address,this.bri)
-				callback(null);
-			})
-			.on('get', (callback) => {
-				this.log(sprintf("getBrightness %s = %d",this.address, this.bri));
-				callback(null, this.bri);
-			});			
+		.on('set', (level, callback) => {
+			this.log.debug(sprintf("setBrightness %s = %d",this.address, level));
+			this.bri = parseInt(level);
+			this.power = (this.bri > 0);
+			this.mh.dimmerCommand(this.address,this.bri)
+			callback(null);
+		})
+		.on('get', (callback) => {
+			this.log(sprintf("getBrightness %s = %d",this.address, this.bri));
+			callback(null, this.bri);
+		});			
 		return [service, this.lightBulbService];
 	}
 }
@@ -679,7 +705,7 @@ class MHThermostat {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("thermostat-%s",config.address));
 		this.log = log;
-		
+
 		this.ambient = 0;
 		this.setpoint = 20;
 		this.mode = -1;
@@ -690,58 +716,58 @@ class MHThermostat {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Thermostat")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Thermostat")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.thermostatService = new Service.Thermostat(this.name);
 		this.thermostatService.getCharacteristic(Characteristic.CurrentTemperature).setProps({minValue: -50, minStep: 0.1, maxValue: 50})
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getCurrentTemperature %s = %s",this.address, this.ambient));
-				callback(null, this.ambient);
-			});
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getCurrentTemperature %s = %s",this.address, this.ambient));
+			callback(null, this.ambient);
+		});
 
 		this.thermostatService.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getCurrentHeatingCoolingState %s = %s",this.address, this.state));
-				callback(null, this.state);
-			}).on('set', (value,callback) => {
-				callback(null);
-			});	
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getCurrentHeatingCoolingState %s = %s",this.address, this.state));
+			callback(null, this.state);
+		}).on('set', (value,callback) => {
+			callback(null);
+		});	
 
 		this.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getTargetHeatingCoolingState %s = %s",this.address, this.state));
-				if (parseInt(this.setpoint,10) > parseInt(this.ambient,10)) {
-					callback(null, Characteristic.TargetHeatingCoolingState.HEAT);
-				} else if (parseInt(this.setpoint,10) < parseInt(this.ambient,10)) {
-					callback(null, Characteristic.TargetHeatingCoolingState.COOL);
-				} else {
-					callback(null, Characteristic.TargetHeatingCoolingState.OFF);
-				}
-			}).on('set', (value,callback) => {
-				this.state = value;
-				this.log.debug(sprintf("setTargetHeatingCoolingState %s = %s",this.address, this.state));
-				callback(null);
-			});			
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getTargetHeatingCoolingState %s = %s",this.address, this.state));
+			if (parseInt(this.setpoint,10) > parseInt(this.ambient,10)) {
+				callback(null, Characteristic.TargetHeatingCoolingState.HEAT);
+			} else if (parseInt(this.setpoint,10) < parseInt(this.ambient,10)) {
+				callback(null, Characteristic.TargetHeatingCoolingState.COOL);
+			} else {
+				callback(null, Characteristic.TargetHeatingCoolingState.OFF);
+			}
+		}).on('set', (value,callback) => {
+			this.state = value;
+			this.log.debug(sprintf("setTargetHeatingCoolingState %s = %s",this.address, this.state));
+			callback(null);
+		});			
 
 		this.thermostatService.getCharacteristic(Characteristic.TargetTemperature).setProps({minValue: 15, minStep:0.5, maxValue: 40})
-			.on('set', (value, callback) => {
-				this.log.debug(sprintf("setCurrentSetpoint %s = %s",this.address, value));
-				this.mh.setSetPoint(this.address,value);
-				callback(null);
-			}).on('get', (callback) => {
-				this.log.debug(sprintf("getCurrentSetpoint %s = %s",this.address, this.setpoint));
-				callback(null, this.setpoint);
-			});
+		.on('set', (value, callback) => {
+			this.log.debug(sprintf("setCurrentSetpoint %s = %s",this.address, value));
+			this.mh.setSetPoint(this.address,value);
+			callback(null);
+		}).on('get', (callback) => {
+			this.log.debug(sprintf("getCurrentSetpoint %s = %s",this.address, this.setpoint));
+			callback(null, this.setpoint);
+		});
 
 		this.thermostatService.getCharacteristic(Characteristic.TemperatureDisplayUnits)
-			.on('set', (value,callback) => {
-				callback(null);
-			}).on('get', (callback) => {
-				this.log.debug(sprintf("getTemperatureDisplayUnits %s = %s",this.address, this.ambient));
-				callback(null, Characteristic.TemperatureDisplayUnits.CELSIUS);
-			});
+		.on('set', (value,callback) => {
+			callback(null);
+		}).on('get', (callback) => {
+			this.log.debug(sprintf("getTemperatureDisplayUnits %s = %s",this.address, this.ambient));
+			callback(null, Characteristic.TemperatureDisplayUnits.CELSIUS);
+		});
 
 		return [service, this.thermostatService];
 	}	
@@ -756,7 +782,7 @@ class MHThermometer {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("thermometer-%s",config.address));
 		this.log = log;
-		
+
 		this.ambient = -1;
 		this.log.info(sprintf("LegrandMyHome::MHThermometer create object: %s", this.address));
 	}
@@ -764,16 +790,16 @@ class MHThermometer {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Thermometer")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Thermometer")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.thermometerService = new Service.TemperatureSensor(this.name);
 		this.thermometerService.getCharacteristic(Characteristic.CurrentTemperature).setProps({minValue: -50, minStep: 0.1, maxValue: 50})
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getCurrentTemperature %s = %s",this.address, this.ambient));
-				callback(null, this.ambient);
-			});
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getCurrentTemperature %s = %s",this.address, this.ambient));
+			callback(null, this.ambient);
+		});
 
 		return [service, this.thermometerService];
 	}	
@@ -788,7 +814,7 @@ class MHContactSensor {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("contactsensor-%s",config.address));
 		this.log = log;
-		
+
 		this.state = false;
 		this.log.info(sprintf("LegrandMyHome::MHContactSensor create object: %s", this.address));
 	}
@@ -796,16 +822,16 @@ class MHContactSensor {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Contact Sensor")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Contact Sensor")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.contactSensorService = new Service.ContactSensor(this.name);
 		this.contactSensorService.getCharacteristic(Characteristic.ContactSensorState)
-			.on('get', (callback) => {
-				this.log.debug(sprintf("getContactSensorState %s = %s",this.address, this.state));
-				callback(null, this.state);
-			});
+		.on('get', (callback) => {
+			this.log.debug(sprintf("getContactSensorState %s = %s",this.address, this.state));
+			callback(null, this.state);
+		});
 
 		return [service, this.contactSensorService];
 	}	
@@ -820,7 +846,7 @@ class MHPowerMeter {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("powermeter-%s",config.address));
 		this.log = log;
-		
+
 		this.value = 0;
 		this.log.info(sprintf("LegrandMyHome::MHPowerMeter create object: %s", this.address));
 	}
@@ -828,16 +854,16 @@ class MHPowerMeter {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "Power Meter")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "Power Meter")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 //		this.powerMeterService = new LegrandMyHome.PowerMeterService(this.name);
 //		this.powerMeterService.getCharacteristic(LegrandMyHome.CurrentPowerConsumption)
-//			.on('get', (callback) => {
-//				this.log.info(sprintf("getConsumption %s = %s",this.address, this.state));
-//				callback(null, this.value);
-//			});
+//		.on('get', (callback) => {
+//		this.log.info(sprintf("getConsumption %s = %s",this.address, this.state));
+//		callback(null, this.value);
+//		});
 		return [service, this.powerMeterService];
 	}	
 }
@@ -851,7 +877,7 @@ class MHButton {
 		this.displayName = config.name;
 		this.UUID = UUIDGen.generate(sprintf("button-%s",config.address));
 		this.log = log;
-		
+
 		this.value = 0;
 		this.log.info(sprintf("LegrandMyHome::MHButton (CEN/CEN+) create object: %s", this.address));
 	}
@@ -859,20 +885,20 @@ class MHButton {
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
-			.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
-			.setCharacteristic(Characteristic.Model, "CEN/CEN+")
-			.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
+		.setCharacteristic(Characteristic.Manufacturer, "Legrand MyHome")
+		.setCharacteristic(Characteristic.Model, "CEN/CEN+")
+		.setCharacteristic(Characteristic.SerialNumber, "Address " + this.address);
 
 		this.statelessSwitch = new Service.Switch(this.name);
 		this.statelessSwitch.getCharacteristic(Characteristic.On)
-			.on('set', (value,callback) => {
-				this.log.info(sprintf("setOn %s = %s",this.address, value));
-				callback(null);
-			})
-			.on('get', (callback) => {
-				this.log.info(sprintf("getOn %s",this.address));
-				callback(null,0);
-			});
+		.on('set', (value,callback) => {
+			this.log.info(sprintf("setOn %s = %s",this.address, value));
+			callback(null);
+		})
+		.on('get', (callback) => {
+			this.log.info(sprintf("getOn %s",this.address));
+			callback(null,0);
+		});
 		return [service, this.statelessSwitch];
 	}	
 }
