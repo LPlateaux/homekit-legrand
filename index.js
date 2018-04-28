@@ -401,7 +401,7 @@ class MHBlind {
 								this.log.info(sprintf("***Montée non terminée : état %s et temps de montée totale %s ms", this.state, totalTime));
 								totalTime = totalTime + compteurMs;
 								compteurMs *= 0.8;
-								this.log.info(sprintf("***nouvelle attente de %s ms", compteursMs));
+								this.log.info(sprintf("***nouvelle attente de %s ms", compteurMs));
 								setTimeout(goDownAsap, compteurMs);
 							}	
 						}.bind(this), compteurMs);
@@ -440,7 +440,7 @@ class MHBlind {
 								this.log.info(sprintf("***Descente non terminée : état %s et temps de descente totale %s ms", this.state, totalTime));
 								totalTime = totalTime + compteurMs;
 								compteurMs *= 0.8;
-								this.log.info(sprintf("***nouvelle attente de %s ms", compteursMs));
+								this.log.info(sprintf("***nouvelle attente de %s ms", compteurMs));
 								setTimeout(goUpAsap, compteurMs);
 							}	
 						}.bind(this), compteurMs);
