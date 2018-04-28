@@ -385,12 +385,12 @@ class MHBlind {
 						this.mh.simpleBlindCommand(this.address,2);
 						this.log.info(sprintf("***Ordre de montée pour calage"));
 						//essai
-						var compteurMs = 4000 ;
-						var totalTime = 0 ;
+						var compteurDownMs = 4000 ;
+						var totalTimeDown = 0 ;
 						setTimeout(function goDownAsap() {
 							this.log.info(sprintf("***Attente fin de montée"));
-							if (this.state == 0 || totalTime>this.time) {
-								this.log.info(sprintf("***Montée terminée : état %s et temps de montée au final %s ms", this.state, totalTime));
+							if (this.state == 0 || totalTimeDown > this.time) {
+								this.log.info(sprintf("***Montée terminée : état %s et temps de montée au final %s ms", this.state, totalTimeDown));
 								this.mh.simpleBlindCommand(this.address,1);
 								setTimeout(function() {
 									this.log.info(sprintf("***Début descente pendant %s ms", travelTimeMs));
@@ -398,13 +398,13 @@ class MHBlind {
 								}.bind(this), travelTimeMs);
 							}
 							else {
-								this.log.info(sprintf("***Montée non terminée : état %s et temps de montée totale %s ms", this.state, totalTime));
-								totalTime = totalTime + compteurMs;
-								compteurMs *= 0.8;
-								this.log.info(sprintf("***nouvelle attente de %s ms", compteurMs));
-								setTimeout(goDownAsap.bind(this), compteurMs);
+								this.log.info(sprintf("***Montée non terminée : état %s et temps de montée totale %s ms", this.state, totalTimeDown));
+								totalTimeDown = totalTimeDown + compteurDownMs;
+								compteurDownMs *= 0.8;
+								this.log.info(sprintf("***nouvelle attente de %s ms", compteurDownMs));
+								setTimeout(goDownAsap.bind(this), compteurDownMs);
 							}	
-						}.bind(this), compteurMs);
+						}.bind(this), compteurDownMs);
 						//fin essai
 //
 //						setTimeout(function() {
@@ -424,12 +424,12 @@ class MHBlind {
 						this.mh.simpleBlindCommand(this.address,1);
 						this.log.info(sprintf("***Ordre de descente pour calage"));
 						//essai
-						var compteurMs = 4000 ;
-						var totalTime = 0 ;
+						var compteurUpMs = 4000 ;
+						var totalTimeUp = 0 ;
 						setTimeout(function goUpAsap() {
 							this.log.info(sprintf("***Attente fin de descente"));
-							if (this.state == 0 || totalTime>this.time) {
-								this.log.info(sprintf("***Descente terminée : état %s et temps de descente au final %s ms", this.state, totalTime));
+							if (this.state == 0 || totalTimeUp > this.time) {
+								this.log.info(sprintf("***Descente terminée : état %s et temps de descente au final %s ms", this.state, totalTimeUp));
 								this.mh.simpleBlindCommand(this.address,1);
 								setTimeout(function() {
 									this.log.info(sprintf("***Début montée pendant %s ms", travelTimeMs));
@@ -437,13 +437,13 @@ class MHBlind {
 								}.bind(this), travelTimeMs);
 							}
 							else {
-								this.log.info(sprintf("***Descente non terminée : état %s et temps de descente totale %s ms", this.state, totalTime));
-								totalTime = totalTime + compteurMs;
-								compteurMs *= 0.8;
-								this.log.info(sprintf("***nouvelle attente de %s ms", compteurMs));
-								setTimeout(goUpAsap.bind(this), compteurMs);
+								this.log.info(sprintf("***Descente non terminée : état %s et temps de descente totale %s ms", this.state, totalTimeUp));
+								totalTimeUp = totalTimeUp + compteurUpMs;
+								compteurUpMs *= 0.8;
+								this.log.info(sprintf("***nouvelle attente de %s ms", compteurUpMs));
+								setTimeout(goUpAsap.bind(this), compteurUpMs);
 							}	
-						}.bind(this), compteurMs);
+						}.bind(this), compteurUpMs);
 						//fin essai
 //						setTimeout(function() {
 //							this.mh.simpleBlindCommand(this.address,0);
