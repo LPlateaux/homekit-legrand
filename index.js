@@ -402,7 +402,7 @@ class MHBlind {
 								totalTime = totalTime + compteurMs;
 								compteurMs *= 0.8;
 								this.log.info(sprintf("***nouvelle attente de %s ms", compteurMs));
-								setTimeout(goDownAsap, compteurMs);
+								setTimeout(goDownAsap.bind(this), compteurMs);
 							}	
 						}.bind(this), compteurMs);
 						//fin essai
@@ -441,7 +441,7 @@ class MHBlind {
 								totalTime = totalTime + compteurMs;
 								compteurMs *= 0.8;
 								this.log.info(sprintf("***nouvelle attente de %s ms", compteurMs));
-								setTimeout(goUpAsap, compteurMs);
+								setTimeout(goUpAsap.bind(this), compteurMs);
 							}	
 						}.bind(this), compteurMs);
 						//fin essai
