@@ -365,26 +365,18 @@ class MHBlind {
 
 		this.windowCoveringService.getCharacteristic(Characteristic.TargetPosition)
 		.on('set', (value, callback) => {
+			this.log.info(sprintf("J'ai reçu une commande à %s pour le volet %s", value, this.name));			
 			this.targetPosition = value;
 //			buffer de commandes pour éviter que l'application envoie des commandes multiples
-//			if (this.buffers[sprintf("%s-%s",_class,_address)] != null) {
-//			clearTimeout(this.buffers[sprintf("%s-%s",_class,_address)]);
-//			}
-//			this.buffers[sprintf("%s-%s",_class,_address)] = setTimeout(function() {
-//			this.command.send(_command);
-//			delete(this.buffers[sprintf("%s-%s",_class,_address)]);
-//			}.bind(this), _timeout);
 			if (this.commandBuffers[sprintf("%s",this.address)] != null) {
+				this.log.info(sprintf("Nouvelle commande à %s pour le volet %s, je stoppe le TimeOut", this.targetPosition, this.name));
 				clearTimeout(this.commandBuffers[sprintf("%s",this.address)]);
-				this.log.info(sprintf("J'ai reçu une commande à %s pour le volet %s", this.targetPosition, this.name));
 			}
 			this.commandBuffers[sprintf("%s",this.address)] = setTimeout(function() {
-
-				this.log.info(sprintf("Envoi de la commande %s pour le volet %s", this.state, this.name));
-				/*variable pour calcul du temps de montée ou descente*/
+				this.log.info(sprintf("Traitement de la commande à %s pour le volet %s", this.targetPosition, this.name));
 
 //				Mon code pour être sûr de toujours partir d'où il faut vu qu'on ne connait pas la position du volet
-//				targetPosition = 100 qd baissé et =0 qd levé 			
+//				targetPosition = 100 qd levé et =0 qd baissé 			
 
 				if (this.time != 0) {
 					this.log.info(sprintf("Commande avec temps de parcours %s pour le volet %s", this.time, this.name));
@@ -510,8 +502,8 @@ class MHBlind {
 //				}
 //				}
 				/*Fin du code Original*/
-				callback(null);
 				delete(this.commandBuffers[sprintf("%s",this.address)]);
+				callback(null);
 			}.bind(this), 1000);
 		})
 
