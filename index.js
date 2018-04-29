@@ -3,6 +3,7 @@ var mh = require(path.join(__dirname,'/lib/mhclient'));
 var sprintf = require("sprintf-js").sprintf, inherits = require("util").inherits, Promise = require('promise');
 var events = require('events'), util = require('util'), fs = require('fs');
 var Accessory, Characteristic, Service, UUIDGen;
+var commandBuffers = {};
 
 module.exports = function (homebridge) {
 	Service = homebridge.hap.Service;
@@ -294,7 +295,6 @@ class MHBlind {
 		this.targetPosition = 0;
 		this.startDelayMs = config.startDelayMs || 0; /* Start delay of the automation and MH relay */
 		this.timeAdjust = config.timeAdjust || 5; /* Percent error, F411 is a bit buggy */
-		this.commandBuffers = {};
 		this.compteurUpMs = 4000 ;
 		this.totalTimeUp = 0 ;
 		this.compteurDownMs = 4000 ;
@@ -368,11 +368,11 @@ class MHBlind {
 			this.log.info(sprintf("J'ai reçu une commande à %s pour le volet %s", value, this.name));			
 			this.targetPosition = value;
 //			buffer de commandes pour éviter que l'application envoie des commandes multiples
-			if (this.commandBuffers[sprintf("%s",this.address)] != null) {
+			if (commandBuffers[sprintf("Blind-%s",this.address)] != null) {
 				this.log.info(sprintf("Nouvelle commande à %s pour le volet %s, je stoppe le TimeOut", this.targetPosition, this.name));
-				clearTimeout(this.commandBuffers[sprintf("%s",this.address)]);
+				clearTimeout(commandBuffers[sprintf("Blind-%s",this.address)]);
 			}
-			this.commandBuffers[sprintf("%s",this.address)] = setTimeout(function() {
+			commandBuffers[sprintf("Blind-%s",this.address)] = setTimeout(function() {
 				this.log.info(sprintf("Traitement de la commande à %s pour le volet %s", this.targetPosition, this.name));
 
 //				Mon code pour être sûr de toujours partir d'où il faut vu qu'on ne connait pas la position du volet
@@ -502,7 +502,7 @@ class MHBlind {
 //				}
 //				}
 				/*Fin du code Original*/
-				delete(this.commandBuffers[sprintf("%s",this.address)]);
+				delete(commandBuffers[sprintf("Blind-%s",this.address)]);
 				callback(null);
 			}.bind(this), 1000);
 		})
