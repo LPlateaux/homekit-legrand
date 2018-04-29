@@ -3,7 +3,6 @@ var mh = require(path.join(__dirname,'/lib/mhclient'));
 var sprintf = require("sprintf-js").sprintf, inherits = require("util").inherits, Promise = require('promise');
 var events = require('events'), util = require('util'), fs = require('fs');
 var Accessory, Characteristic, Service, UUIDGen;
-var commandBuffers = {};
 
 module.exports = function (homebridge) {
 	Service = homebridge.hap.Service;
@@ -300,6 +299,7 @@ class MHBlind {
 		this.compteurDownMs = 4000 ;
 		this.totalTimeDown = 0 ;
 		this.travelTimeMs = 0;
+		this.commandBuffers = {};
 
 		this.log.info(sprintf("LegrandMyHome::MHBlind create object: %s", this.address));
 	}
@@ -368,11 +368,11 @@ class MHBlind {
 			this.log.info(sprintf("J'ai reçu une commande à %s pour le volet %s", value, this.name));			
 			this.targetPosition = value;
 //			buffer de commandes pour éviter que l'application envoie des commandes multiples
-			if (commandBuffers[sprintf("Blind-%s",this.address)] != null) {
+			if (this.commandBuffers[sprintf("Blind-%s",this.address)] != null) {
 				this.log.info(sprintf("Nouvelle commande à %s pour le volet %s, je stoppe le TimeOut", this.targetPosition, this.name));
-				clearTimeout(commandBuffers[sprintf("Blind-%s",this.address)]);
+				clearTimeout(this.commandBuffers[sprintf("Blind-%s",this.address)]);
 			}
-			commandBuffers[sprintf("Blind-%s",this.address)] = setTimeout(function() {
+			this.commandBuffers[sprintf("Blind-%s",this.address)] = setTimeout(function() {
 				this.log.info(sprintf("Traitement de la commande à %s pour le volet %s", this.targetPosition, this.name));
 
 //				Mon code pour être sûr de toujours partir d'où il faut vu qu'on ne connait pas la position du volet
@@ -502,10 +502,10 @@ class MHBlind {
 //				}
 //				}
 				/*Fin du code Original*/
-				delete(commandBuffers[sprintf("Blind-%s",this.address)]);
+				delete(this.commandBuffers[sprintf("Blind-%s",this.address)]);
 				callback(null);
 			}.bind(this), 5000);
-			this.log.info(sprintf("J'ai rempli le buffer commandBuffers[ %s ] avec un id %s",sprintf("Blind-%s",this.address), commandBuffers[sprintf("Blind-%s",this.address)]));
+			this.log.info(sprintf("J'ai rempli le buffer commandBuffers[ %s ] avec un id %s",sprintf("Blind-%s",this.address), this.commandBuffers[sprintf("Blind-%s",this.address)]));
 		})
 
 		.on('get', (callback) => {
