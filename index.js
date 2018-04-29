@@ -367,7 +367,12 @@ class MHBlind {
 		.on('set', (value, callback) => {
 			this.log.info(sprintf("J'ai reçu une commande à %s pour le volet %s", value, this.name));			
 			this.targetPosition = value;
-//			buffer de commandes pour éviter que l'application envoie des commandes multiples
+//*************************************************************************************************
+
+			this.mh.simpleBlindCommand(this.address, this.targetPosition, this.time, this);
+						
+//*************************************************************************************************			
+/*//			buffer de commandes pour éviter que l'application envoie des commandes multiples
 			if (this.commandBuffers[sprintf("Blind-%s",this.address)] != null) {
 				this.log.info(sprintf("Nouvelle commande à %s pour le volet %s, je stoppe le TimeOut", this.targetPosition, this.name));
 				clearTimeout(this.commandBuffers[sprintf("Blind-%s",this.address)]);
@@ -380,17 +385,17 @@ class MHBlind {
 
 				if (this.time != 0) {
 					this.log.info(sprintf("Commande avec temps de parcours %s pour le volet %s", this.time, this.name));
-					/*Si complétement ouvert*/
+					Si complétement ouvert
 					if (this.targetPosition > 95) {
 //						this.mh.simpleBlindCommand(this.address,1);
 						this.log.info(sprintf("Demande position ouverte complète, envoi de la commande %s pour le volet %s", this.state, this.name));
 					}
-					/*Si complétement fermé*/
+					Si complétement fermé
 					if (this.targetPosition < 5 ) {
 //						this.mh.simpleBlindCommand(this.address,2);
 						this.log.info(sprintf("Demande position fermée complète, envoi de la commande %s pour le volet %s", this.state, this.name));
 					}
-					/* Si entrouvert en bas */
+					 Si entrouvert en bas 
 					if (this.targetPosition >= 5 && this.targetPosition <= 50) {
 						this.log.info(sprintf("Demande position fermeture partielle à %s, pour le volet %s", this.targetPosition, this.name));
 						this.travelTimeMs = this.time*1000*(this.targetPosition)/100;
@@ -419,18 +424,8 @@ class MHBlind {
 								setTimeout(goUpAsap.bind(this), this.compteurDownMs);
 							}	
 						}.bind(this), this.compteurDownMs);
-						//fin essai
-
-//						setTimeout(function() {
-//						this.mh.simpleBlindCommand(this.address,0);
-//						this.mh.simpleBlindCommand(this.address,1);
-//						setTimeout(function() {
-//						this.mh.simpleBlindCommand(this.address,0);
-//						}.bind(this), this.travelTimeMs);
-//						}.bind(this), this.time*1000);
-
 					}
-					/* Si entrouvert en haut */
+					 Si entrouvert en haut 
 					if (this.targetPosition > 50 && this.targetPosition <= 95) {
 						this.log.info(sprintf("Demande position fermeture partielle à %s pour le volet %s", this.targetPosition, this.name));
 						this.travelTimeMs = this.time*1000*(100-this.targetPosition)/100;
@@ -459,14 +454,6 @@ class MHBlind {
 								setTimeout(goDownAsap.bind(this), this.compteurUpMs);
 							}	
 						}.bind(this), this.compteurUpMs);
-						//fin essai
-//						setTimeout(function() {
-//						this.mh.simpleBlindCommand(this.address,0);
-//						this.mh.simpleBlindCommand(this.address,2);
-//						setTimeout(function() {
-//						this.mh.simpleBlindCommand(this.address,0);
-//						}.bind(this), this.travelTimeMs);
-//						}.bind(this), this.time*1000);
 					}
 				} else {
 					this.log.info(sprintf("Commande SANS temps de parcours pour le volet %s", this.time, this.name));
@@ -482,30 +469,13 @@ class MHBlind {
 						this.mh.simpleBlindCommand(this.address,0);
 						this.log.info(sprintf("***Commande à arrêt pour le volet %s", this.name));
 					}
-
 				}				
-				/*Fin de mon code*/
-
-				/*Code original*/				
-//				if (value > this.currentPosition) {
-//				this.mh.simpleBlindCommand(this.address,1);
-//				} else {
-//				this.mh.simpleBlindCommand(this.address,2);
-//				}
-
-//				/* Use the calculated travel time only if the target isn't the complete Up or Complete Down */
-//				if (this.targetPosition > 0 && this.targetPosition < 100) {
-//				if (this.travelTimeMs > 0) {
-//				setTimeout(function() {
-//				this.mh.simpleBlindCommand(this.address,0);
-//				}.bind(this), this.travelTimeMs);
-//				}
-//				}
-				/*Fin du code Original*/
 				delete(this.commandBuffers[sprintf("Blind-%s",this.address)]);
-				callback(null);
+
 			}.bind(this), 5000);
 			this.log.info(sprintf("J'ai rempli le buffer commandBuffers[ %s ] avec un id %s",sprintf("Blind-%s",this.address), this.commandBuffers[sprintf("Blind-%s",this.address)]));
+*/
+			callback(null);
 		})
 
 		.on('get', (callback) => {
